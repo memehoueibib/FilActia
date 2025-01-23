@@ -1,20 +1,37 @@
-import FontAwesome from '@expo/vector-icons/FontAwesome';
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { Stack } from 'expo-router';
-import { useColorScheme } from 'react-native';
-import { AuthProvider } from '../context/AuthContext';
+import { Stack, router } from 'expo-router';
+import { useEffect } from 'react';
+import { AuthProvider, useAuth } from '../context/AuthContext';
+import * as SplashScreen from 'expo-splash-screen';
 
-export default function RootLayout() {
-  const colorScheme = useColorScheme();
+function RootLayoutNav() {
+  const { session, loading } = useAuth();
+
+  useEffect(() => {
+    if (!loading) {
+      if (session) {
+        router.replace('/(tabs)');
+      } else {
+        router.replace('/(auth)/login');
+      }
+    }
+  }, [session, loading]);
+
+  if (loading) {
+    return null;
+  }
 
   return (
+    <Stack>
+      <Stack.Screen name="(auth)" options={{ headerShown: false }} />
+      <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+    </Stack>
+  );
+}
+
+export default function RootLayout() {
+  return (
     <AuthProvider>
-      <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-        <Stack>
-          <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="(auth)" options={{ headerShown: false }} />
-        </Stack>
-      </ThemeProvider>
+      <RootLayoutNav />
     </AuthProvider>
   );
 }
