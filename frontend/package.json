@@ -19,6 +19,7 @@
     "@react-native-async-storage/async-storage": "1.23.1",
     "@react-navigation/bottom-tabs": "^7.2.0",
     "@react-navigation/native": "^7.0.14",
+    "@urql/core": "^5.1.0",
     "axios": "^1.7.9",
     "expo": "~52.0.25",
     "expo-blur": "~14.0.2",
