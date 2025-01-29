@@ -1,17 +1,22 @@
 import { Tabs } from 'expo-router';
 import { useColorScheme } from 'react-native';
 import { FontAwesome } from '@expo/vector-icons';
-import Colors from '../../constants/Colors';
+import { Colors } from '../../constants/Colors';
 
 export default function TabLayout() {
+  // Récupère la valeur du système : 'light', 'dark' ou parfois autre chose
   const colorScheme = useColorScheme();
+  // On force un fallback pour éviter d'accéder à Colors[undefined]
+  const theme = colorScheme === 'dark' ? 'dark' : 'light';
 
   return (
     <Tabs
       screenOptions={{
-        tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
-        headerShown: true,
-      }}>
+        // Utilise la bonne clé dans Colors en fonction de `theme`
+        tabBarActiveTintColor: Colors[theme].tint,
+        headerShown: true, 
+      }}
+    >
       <Tabs.Screen
         name="feed"
         options={{
@@ -44,6 +49,7 @@ export default function TabLayout() {
   );
 }
 
+// Petit composant pour l'icône
 function TabBarIcon(props: {
   name: React.ComponentProps<typeof FontAwesome>['name'];
   color: string;
