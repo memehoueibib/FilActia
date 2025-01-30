@@ -9,7 +9,7 @@ function RootLayoutNav() {
   useEffect(() => {
     if (!loading) {
       if (session) {
-        router.replace('/(tabs)');
+        router.replace('/(tabs)/feed');
       } else {
         router.replace('/(auth)/login');
       }
