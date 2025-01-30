@@ -8,6 +8,8 @@ function RootLayoutNav() {
 
   useEffect(() => {
     if (!loading) {
+      // Si on a une session => on va direct sur les tabs
+      // Sinon => login
       if (session) {
         router.replace('/(tabs)/feed');
       } else {
@@ -17,13 +19,16 @@ function RootLayoutNav() {
   }, [session, loading]);
 
   if (loading) {
-    return null;
+    return null; // ou un petit loader
   }
 
   return (
     <Stack>
       <Stack.Screen name="(auth)" options={{ headerShown: false }} />
       <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+      {/* on a aussi la page edit-profile, la page /profile/[id], etc. */}
+      <Stack.Screen name="edit-profile" options={{ title: 'Edit Profile' }} />
+      <Stack.Screen name="profile/[id]" options={{ title: 'User Profile' }} />
     </Stack>
   );
 }

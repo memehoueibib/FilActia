@@ -1,5 +1,11 @@
 import { useEffect, useState } from 'react';
-import { StyleSheet, Image, ScrollView, TouchableOpacity, RefreshControl } from 'react-native';
+import {
+  StyleSheet,
+  Image,
+  ScrollView,
+  TouchableOpacity,
+  RefreshControl,
+} from 'react-native';
 import { View, Text } from '../../components/ui/Themed';
 import { supabase } from '../../lib/supabase';
 import { useAuth } from '../../context/AuthContext';
@@ -9,7 +15,7 @@ import { FontAwesome } from '@expo/vector-icons';
 import { router } from 'expo-router';
 
 export default function ProfileScreen() {
-  const { session } = useAuth();
+  const { session, signOut } = useAuth();
   const [profile, setProfile] = useState<Profile | null>(null);
   const [posts, setPosts] = useState<Post[]>([]);
   const [loading, setLoading] = useState(true);
@@ -63,8 +69,19 @@ export default function ProfileScreen() {
     router.push('/edit-profile');
   };
 
+  // Bouton "Se déconnecter"
+  const handleLogout = async () => {
+    try {
+      await signOut();
+      // Redirection 
+      router.replace('/(auth)/login');
+    } catch (error) {
+      console.error('Error logging out:', error);
+    }
+  };
+
   return (
-    <ScrollView 
+    <ScrollView
       style={styles.container}
       refreshControl={
         <RefreshControl refreshing={loading} onRefresh={handleRefresh} />
@@ -78,10 +95,19 @@ export default function ProfileScreen() {
         <Text style={styles.name}>{profile?.full_name}</Text>
         <Text style={styles.username}>@{profile?.username}</Text>
         {profile?.bio && <Text style={styles.bio}>{profile.bio}</Text>}
-        
+
         <TouchableOpacity style={styles.editButton} onPress={handleEditProfile}>
           <FontAwesome name="edit" size={16} color="#fff" />
           <Text style={styles.editButtonText}>Edit Profile</Text>
+        </TouchableOpacity>
+
+        {/* Bouton de déconnexion */}
+        <TouchableOpacity
+          style={[styles.editButton, { backgroundColor: '#555', marginTop: 10 }]}
+          onPress={handleLogout}
+        >
+          <FontAwesome name="sign-out" size={16} color="#fff" />
+          <Text style={styles.editButtonText}>Se déconnecter</Text>
         </TouchableOpacity>
       </View>
 
@@ -90,12 +116,11 @@ export default function ProfileScreen() {
           <Text style={styles.statNumber}>{posts.length}</Text>
           <Text style={styles.statLabel}>Posts</Text>
         </View>
-        {/* Add more stats if needed */}
       </View>
 
       <View style={styles.postsContainer}>
         <Text style={styles.sectionTitle}>Posts</Text>
-        {posts.map(post => (
+        {posts.map((post) => (
           <PostCard
             key={post.id}
             post={post}
@@ -109,13 +134,8 @@ export default function ProfileScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  header: {
-    alignItems: 'center',
-    padding: 20,
-  },
+  container: { flex: 1 },
+  header: { alignItems: 'center', padding: 20 },
   avatar: {
     width: 100,
     height: 100,
@@ -159,20 +179,10 @@ const styles = StyleSheet.create({
     borderBottomWidth: 1,
     borderColor: '#eee',
   },
-  statItem: {
-    alignItems: 'center',
-  },
-  statNumber: {
-    fontSize: 18,
-    fontWeight: 'bold',
-  },
-  statLabel: {
-    fontSize: 14,
-    color: '#666',
-  },
-  postsContainer: {
-    padding: 10,
-  },
+  statItem: { alignItems: 'center' },
+  statNumber: { fontSize: 18, fontWeight: 'bold' },
+  statLabel: { fontSize: 14, color: '#666' },
+  postsContainer: { padding: 10 },
   sectionTitle: {
     fontSize: 18,
     fontWeight: 'bold',
