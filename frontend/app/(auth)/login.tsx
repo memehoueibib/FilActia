@@ -1,8 +1,5 @@
-
-//app/(auth)/login.tsx
-
 import { useState } from 'react';
-import { StyleSheet, TextInput, TouchableOpacity } from 'react-native';
+import { StyleSheet, TextInput, TouchableOpacity, Image } from 'react-native';
 import { Text, View } from '../../components/ui/Themed';
 import { useAuth } from '../../context/AuthContext';
 import { router } from 'expo-router';
@@ -20,8 +17,8 @@ export default function LoginScreen() {
       await signIn(email, password);
       router.replace('/(tabs)/feed');
     } catch (error) {
-      console.error('Error logging in:', error);
-      alert('Failed to log in. Please check your credentials.');
+      console.error('Erreur de connexion:', error);
+      alert('Échec de la connexion. Veuillez vérifier vos identifiants.');
     } finally {
       setLoading(false);
     }
@@ -29,7 +26,12 @@ export default function LoginScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Welcome to FilActia</Text>
+      {/* Section logo et titre */}
+      <View style={styles.logoContainer}>
+        <Image source={require('../../assets/images/logo-sombre.png')} style={styles.logo} />
+        <Text style={styles.title}>Se connecter</Text>
+      </View>
+
       <TextInput
         style={styles.input}
         placeholder="Email"
@@ -40,7 +42,7 @@ export default function LoginScreen() {
       />
       <TextInput
         style={styles.input}
-        placeholder="Password"
+        placeholder="Mot de passe"
         value={password}
         onChangeText={setPassword}
         secureTextEntry
@@ -51,12 +53,12 @@ export default function LoginScreen() {
         disabled={loading}
       >
         <Text style={styles.buttonText}>
-          {loading ? 'Loading...' : 'Login'}
+          {loading ? 'Chargement...' : 'Se connecter'}
         </Text>
       </TouchableOpacity>
 
       <TouchableOpacity onPress={() => router.push('/register')}>
-        <Text style={styles.link}>Don't have an account? Register</Text>
+        <Text style={styles.link}>Vous n'avez pas de compte ? S'inscrire</Text>
       </TouchableOpacity>
     </View>
   );
@@ -64,19 +66,54 @@ export default function LoginScreen() {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1, alignItems: 'center', justifyContent: 'center', padding: 20,
+    flex: 1, 
+    alignItems: 'center', 
+    justifyContent: 'center', 
+    padding: 20,
+    backgroundColor: '#f9f9f9',
+  },
+  logoContainer: {
+    alignItems: 'center',
+    marginBottom: 30,
+    backgroundColor: '#f9F9F9',
+  },
+  logo: {
+    width: 100,
+    height: 100,
+    marginBottom: 10,
   },
   title: {
-    fontSize: 24, fontWeight: 'bold', marginBottom: 20,
+    fontSize: 26, 
+    fontWeight: 'bold', 
+    color: '#333', 
+    marginBottom: 20,
   },
   input: {
-    width: '100%', height: 40, borderWidth: 1, borderColor: '#ddd',
-    borderRadius: 5, padding: 10, marginBottom: 10,
+    width: '100%', 
+    height: 45, 
+    borderWidth: 1, 
+    borderColor: '#ccc',
+    borderRadius: 8, 
+    padding: 10, 
+    marginBottom: 12,
+    backgroundColor: '#fff',
   },
   button: {
-    width: '100%', backgroundColor: '#2196F3', padding: 15,
-    borderRadius: 5, alignItems: 'center', marginTop: 10,
+    width: '100%', 
+    backgroundColor: '#4CAF50', 
+    padding: 16,
+    borderRadius: 8, 
+    alignItems: 'center', 
+    marginTop: 12,
   },
-  buttonText: { color: 'white', fontWeight: 'bold' },
-  link: { color: '#2196F3', marginTop: 15 },
+  buttonText: { 
+    color: 'white', 
+    fontWeight: 'bold', 
+    fontSize: 16 
+  },
+  link: { 
+    color: '#2196F3', 
+    marginTop: 18, 
+    fontSize: 14 
+  },
 });

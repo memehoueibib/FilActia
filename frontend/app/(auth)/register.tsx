@@ -1,8 +1,5 @@
-//app/(auth)/register.tsx
-
-
 import React, { useState } from 'react';
-import { StyleSheet, TextInput, TouchableOpacity } from 'react-native';
+import { StyleSheet, TextInput, TouchableOpacity, Image } from 'react-native';
 import { Text, View } from '../../components/ui/Themed';
 import { useAuth } from '../../context/AuthContext';
 import { router } from 'expo-router';
@@ -65,8 +62,8 @@ export default function RegisterScreen() {
       router.replace('/(tabs)/feed');
 
     } catch (error) {
-      console.error('Error registering:', error);
-      alert('Failed to register. Please try again.');
+      console.error('Erreur d\'inscription:', error);
+      alert('Échec de l\'inscription. Veuillez réessayer.');
     } finally {
       setLoading(false);
     }
@@ -74,25 +71,29 @@ export default function RegisterScreen() {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.title}>Create Account</Text>
+      {/* Section logo et titre */}
+      <View style={styles.logoContainer}>
+        <Image source={require('../../assets/images/logo-sombre.png')} style={styles.logo} />
+        <Text style={styles.title}>Créer un compte</Text>
+      </View>
 
       <TextInput
         style={styles.input}
-        placeholder="First Name"
+        placeholder="Prénom"
         value={firstName}
         onChangeText={setFirstName}
       />
 
       <TextInput
         style={styles.input}
-        placeholder="Last Name"
+        placeholder="Nom"
         value={lastName}
         onChangeText={setLastName}
       />
 
       <TextInput
         style={styles.input}
-        placeholder="Username"
+        placeholder="Nom d'utilisateur"
         value={username}
         onChangeText={setUsername}
         autoCapitalize="none"
@@ -109,7 +110,7 @@ export default function RegisterScreen() {
 
       <TextInput
         style={styles.input}
-        placeholder="Password"
+        placeholder="Mot de passe"
         value={password}
         onChangeText={setPassword}
         secureTextEntry
@@ -121,12 +122,12 @@ export default function RegisterScreen() {
         disabled={loading}
       >
         <Text style={styles.buttonText}>
-          {loading ? 'Creating Account...' : 'Register'}
+          {loading ? 'Création du compte...' : 'S\'inscrire'}
         </Text>
       </TouchableOpacity>
 
       <TouchableOpacity onPress={() => router.push('/login')}>
-        <Text style={styles.link}>Already have an account? Login</Text>
+        <Text style={styles.link}>Vous avez déjà un compte ? Se connecter</Text>
       </TouchableOpacity>
     </View>
   );
@@ -137,19 +138,54 @@ export default function RegisterScreen() {
 // ----------------------
 const styles = StyleSheet.create({
   container: {
-    flex: 1, alignItems: 'center', justifyContent: 'center', padding: 20,
+    flex: 1, 
+    alignItems: 'center', 
+    justifyContent: 'center', 
+    padding: 20,
+    backgroundColor: '#f9f9f9',
+  },
+  logoContainer: {
+    alignItems: 'center',
+    marginBottom: 30,
+    backgroundColor: '#f9F9F9',
+  },
+  logo: {
+    width: 100,
+    height: 100,
+    marginBottom: 10,
   },
   title: {
-    fontSize: 24, fontWeight: 'bold', marginBottom: 20,
+    fontSize: 26, 
+    fontWeight: 'bold', 
+    color: '#333', 
+    marginBottom: 20,
   },
   input: {
-    width: '100%', height: 40, borderWidth: 1, borderColor: '#ddd',
-    borderRadius: 5, padding: 10, marginBottom: 10,
+    width: '100%', 
+    height: 45, 
+    borderWidth: 1, 
+    borderColor: '#ccc',
+    borderRadius: 8, 
+    padding: 10, 
+    marginBottom: 12,
+    backgroundColor: '#fff',
   },
   button: {
-    width: '100%', backgroundColor: '#2196F3', padding: 15,
-    borderRadius: 5, alignItems: 'center', marginTop: 10,
+    width: '100%', 
+    backgroundColor: '#4CAF50', 
+    padding: 16,
+    borderRadius: 8, 
+    alignItems: 'center', 
+    marginTop: 12,
   },
-  buttonText: { color: 'white', fontWeight: 'bold' },
-  link: { color: '#2196F3', marginTop: 15 },
+  buttonText: { 
+    color: 'white', 
+    fontWeight: 'bold', 
+    fontSize: 16 
+  },
+  link: { 
+    color: '#2196F3', 
+    marginTop: 18, 
+    fontSize: 14 
+  },
 });
