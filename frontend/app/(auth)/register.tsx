@@ -1,4 +1,7 @@
-import { useState } from 'react';
+//app/(auth)/register.tsx
+
+
+import React, { useState } from 'react';
 import { StyleSheet, TextInput, TouchableOpacity } from 'react-native';
 import { Text, View } from '../../components/ui/Themed';
 import { useAuth } from '../../context/AuthContext';
@@ -8,33 +11,59 @@ import { supabase } from '../../lib/supabase';
 export default function RegisterScreen() {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+
+  // Champs supplémentaires (facultatifs) :
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
   const [username, setUsername] = useState('');
+
   const [loading, setLoading] = useState(false);
+
+  // On récupère la fonction signUp depuis le AuthContext
   const { signUp } = useAuth();
 
   const handleRegister = async () => {
     try {
       setLoading(true);
+
+      // 1) Créer l’utilisateur dans auth.users via le contexte
       const { error: signUpError } = await signUp(email, password);
-      if (signUpError) throw signUpError;
+      if (signUpError) {
+        throw signUpError;
+      }
 
-      const { data: profile, error: profileError } = await supabase
+      // 2) Récupérer la session (pour avoir user.id)
+      const { data: sessionData, error: sessionError } = await supabase.auth.getSession();
+      if (sessionError) {
+        throw sessionError;
+      }
+
+      const userId = sessionData.session?.user.id;
+      if (!userId) {
+        throw new Error('No user session found');
+      }
+
+      // 3) (Facultatif) Mettre à jour la ligne que le trigger vient de créer dans `profiles`.
+      //    Le trigger a inséré 'id' + 'email' + des champs vides.
+      //    Ici, on complète first_name, last_name, etc.
+      const { error: updateError } = await supabase
         .from('profiles')
-        .insert([
-          {
-            first_name: firstName,
-            last_name: lastName,
-            username,
-            full_name: `${firstName} ${lastName}`,
-            email
-          }
-        ]);
+        .update({
+          first_name: firstName,
+          last_name: lastName,
+          username,
+          full_name: `${firstName} ${lastName}`,
+          email,
+        })
+        .eq('id', userId);
 
-      if (profileError) throw profileError;
+      if (updateError) {
+        throw updateError;
+      }
 
-      router.replace('/feed');
+      // 4) Rediriger vers l'onglet Feed
+      router.replace('/(tabs)/feed');
+
     } catch (error) {
       console.error('Error registering:', error);
       alert('Failed to register. Please try again.');
@@ -46,14 +75,14 @@ export default function RegisterScreen() {
   return (
     <View style={styles.container}>
       <Text style={styles.title}>Create Account</Text>
-      
+
       <TextInput
         style={styles.input}
         placeholder="First Name"
         value={firstName}
         onChangeText={setFirstName}
       />
-      
+
       <TextInput
         style={styles.input}
         placeholder="Last Name"
@@ -86,8 +115,8 @@ export default function RegisterScreen() {
         secureTextEntry
       />
 
-      <TouchableOpacity 
-        style={styles.button} 
+      <TouchableOpacity
+        style={styles.button}
         onPress={handleRegister}
         disabled={loading}
       >
@@ -103,41 +132,24 @@ export default function RegisterScreen() {
   );
 }
 
+// ----------------------
+// Styles
+// ----------------------
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 20,
+    flex: 1, alignItems: 'center', justifyContent: 'center', padding: 20,
   },
   title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
+    fontSize: 24, fontWeight: 'bold', marginBottom: 20,
   },
   input: {
-    width: '100%',
-    height: 40,
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 5,
-    padding: 10,
-    marginBottom: 10,
+    width: '100%', height: 40, borderWidth: 1, borderColor: '#ddd',
+    borderRadius: 5, padding: 10, marginBottom: 10,
   },
   button: {
-    width: '100%',
-    backgroundColor: '#2196F3',
-    padding: 15,
-    borderRadius: 5,
-    alignItems: 'center',
-    marginTop: 10,
+    width: '100%', backgroundColor: '#2196F3', padding: 15,
+    borderRadius: 5, alignItems: 'center', marginTop: 10,
   },
-  buttonText: {
-    color: 'white',
-    fontWeight: 'bold',
-  },
-  link: {
-    color: '#2196F3',
-    marginTop: 15,
-  },
+  buttonText: { color: 'white', fontWeight: 'bold' },
+  link: { color: '#2196F3', marginTop: 15 },
 });

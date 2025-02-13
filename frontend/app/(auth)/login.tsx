@@ -1,8 +1,12 @@
+
+//app/(auth)/login.tsx
+
 import { useState } from 'react';
 import { StyleSheet, TextInput, TouchableOpacity } from 'react-native';
 import { Text, View } from '../../components/ui/Themed';
 import { useAuth } from '../../context/AuthContext';
 import { router } from 'expo-router';
+import React from 'react';
 
 export default function LoginScreen() {
   const [email, setEmail] = useState('');
@@ -14,7 +18,7 @@ export default function LoginScreen() {
     try {
       setLoading(true);
       await signIn(email, password);
-      router.replace('/feed');
+      router.replace('/(tabs)/feed');
     } catch (error) {
       console.error('Error logging in:', error);
       alert('Failed to log in. Please check your credentials.');
@@ -41,8 +45,8 @@ export default function LoginScreen() {
         onChangeText={setPassword}
         secureTextEntry
       />
-      <TouchableOpacity 
-        style={styles.button} 
+      <TouchableOpacity
+        style={styles.button}
         onPress={handleLogin}
         disabled={loading}
       >
@@ -50,6 +54,7 @@ export default function LoginScreen() {
           {loading ? 'Loading...' : 'Login'}
         </Text>
       </TouchableOpacity>
+
       <TouchableOpacity onPress={() => router.push('/register')}>
         <Text style={styles.link}>Don't have an account? Register</Text>
       </TouchableOpacity>
@@ -59,39 +64,19 @@ export default function LoginScreen() {
 
 const styles = StyleSheet.create({
   container: {
-    flex: 1,
-    alignItems: 'center',
-    justifyContent: 'center',
-    padding: 20,
+    flex: 1, alignItems: 'center', justifyContent: 'center', padding: 20,
   },
   title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    marginBottom: 20,
+    fontSize: 24, fontWeight: 'bold', marginBottom: 20,
   },
   input: {
-    width: '100%',
-    height: 40,
-    borderWidth: 1,
-    borderColor: '#ddd',
-    borderRadius: 5,
-    padding: 10,
-    marginBottom: 10,
+    width: '100%', height: 40, borderWidth: 1, borderColor: '#ddd',
+    borderRadius: 5, padding: 10, marginBottom: 10,
   },
   button: {
-    width: '100%',
-    backgroundColor: '#2196F3',
-    padding: 15,
-    borderRadius: 5,
-    alignItems: 'center',
-    marginTop: 10,
+    width: '100%', backgroundColor: '#2196F3', padding: 15,
+    borderRadius: 5, alignItems: 'center', marginTop: 10,
   },
-  buttonText: {
-    color: 'white',
-    fontWeight: 'bold',
-  },
-  link: {
-    color: '#2196F3',
-    marginTop: 15,
-  },
+  buttonText: { color: 'white', fontWeight: 'bold' },
+  link: { color: '#2196F3', marginTop: 15 },
 });
