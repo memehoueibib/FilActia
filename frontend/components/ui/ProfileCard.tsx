@@ -1,66 +1,109 @@
+// frontend/components/ui/ProfileCard.tsx
 import React from 'react';
-import { StyleSheet, TouchableOpacity, Image } from 'react-native';
+import { StyleSheet, TouchableOpacity, Image, View as RNView, Platform } from 'react-native';
 import { View, Text } from './Themed';
 import { Profile } from '../../types';
 import { router } from 'expo-router';
+import { Colors } from '../../constants/Colors';
+import FollowButton from './FollowButton';
+import { useAuth } from '../../context/AuthContext';
 
 type ProfileCardProps = {
   profile: Profile;
+  showFollow?: boolean;
 };
 
-export function ProfileCard({ profile }: ProfileCardProps) {
+export function ProfileCard({ profile, showFollow = true }: ProfileCardProps) {
+  const { session } = useAuth();
+
   return (
-    <TouchableOpacity 
-      style={styles.card}
-      onPress={() => router.push(`/profile/${profile.id}`)}
-    >
-      <Image
-        source={{ uri: profile.avatar_url || 'https://via.placeholder.com/60' }}
-        style={styles.avatar}
-      />
-      <View style={styles.info}>
-        <Text style={styles.name}>{profile.full_name}</Text>
-        <Text style={styles.username}>@{profile.username}</Text>
-        {profile.bio && <Text style={styles.bio}>{profile.bio}</Text>}
-      </View>
-    </TouchableOpacity>
+    <RNView style={styles.card}>
+      <TouchableOpacity
+        style={styles.container}
+        onPress={() => router.push(`/profile/${profile.id}`)}
+      >
+        <Image
+          source={{
+            uri:
+              profile.avatar_url ||
+              'https://www.gravatar.com/avatar/00000000000000000000000000000000?d=mp&f=y',
+          }}
+          style={styles.avatar}
+        />
+
+        <View style={styles.info}>
+          <Text style={styles.name} numberOfLines={1}>
+            {profile.full_name}
+          </Text>
+          <Text style={styles.username} numberOfLines={1}>
+            @{profile.username}
+          </Text>
+          {profile.bio && (
+            <Text style={styles.bio} numberOfLines={2}>
+              {profile.bio}
+            </Text>
+          )}
+        </View>
+
+        {showFollow && session?.user?.id !== profile.id && (
+          <RNView style={styles.followContainer}>
+            <FollowButton profileId={profile.id} />
+          </RNView>
+        )}
+      </TouchableOpacity>
+    </RNView>
   );
 }
 
 const styles = StyleSheet.create({
   card: {
+    backgroundColor: Colors.light.background,
+    borderRadius: 12,
+    marginVertical: 6,
+    ...Platform.select({
+      ios: {
+        shadowColor: '#000',
+        shadowOffset: { width: 0, height: 2 },
+        shadowOpacity: 0.1,
+        shadowRadius: 4,
+      },
+      android: {
+        elevation: 3,
+      },
+    }),
+  },
+  container: {
     flexDirection: 'row',
-    padding: 15,
-    backgroundColor: 'white',
-    marginVertical: 5,
-    borderRadius: 10,
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 1 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
-    elevation: 2,
+    padding: 12,
   },
   avatar: {
-    width: 60,
-    height: 60,
-    borderRadius: 30,
+    width: 50,
+    height: 50,
+    borderRadius: 25,
   },
   info: {
-    marginLeft: 15,
     flex: 1,
+    marginLeft: 12,
+    justifyContent: 'center',
   },
   name: {
     fontSize: 16,
-    fontWeight: 'bold',
+    fontWeight: '600',
+    color: Colors.light.text,
   },
   username: {
     fontSize: 14,
-    color: '#666',
+    color: Colors.light.icon,
     marginTop: 2,
   },
   bio: {
     fontSize: 14,
-    marginTop: 5,
-    color: '#444',
+    color: Colors.light.text,
+    marginTop: 4,
+    lineHeight: 18,
+  },
+  followContainer: {
+    justifyContent: 'center',
+    marginLeft: 8,
   },
 });

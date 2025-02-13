@@ -1,9 +1,15 @@
-
-// frontend/components/ui/Button.tsx
-
+// frontend/components/ui/IconSymbol.tsx
 import { SymbolView, SymbolViewProps, SymbolWeight } from 'expo-symbols';
 import React from 'react';
 import { StyleProp, ViewStyle } from 'react-native';
+
+type IconSymbolProps = {
+  name: SymbolViewProps['name'];
+  size?: number;
+  color: string;
+  style?: StyleProp<ViewStyle>;
+  weight?: SymbolWeight;
+};
 
 export function IconSymbol({
   name,
@@ -11,13 +17,7 @@ export function IconSymbol({
   color,
   style,
   weight = 'regular',
-}: {
-  name: SymbolViewProps['name'];
-  size?: number;
-  color: string;
-  style?: StyleProp<ViewStyle>;
-  weight?: SymbolWeight;
-}) {
+}: IconSymbolProps) {
   return (
     <SymbolView
       weight={weight}
